@@ -41,7 +41,7 @@
 
         // Load Posts
         const loadPosts = async () => {
-            const res = await fetch('http://localhost:5000/api/posts');
+            const res = await fetch('https://post-management-nodejs-v3.onrender.com/api/posts');
             const posts = await res.json();
 
             const postList = document.getElementById('postList');
@@ -97,3 +97,4 @@
     </script>
 </body>
 </html>
+
