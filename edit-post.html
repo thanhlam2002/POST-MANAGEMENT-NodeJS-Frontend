@@ -31,7 +31,7 @@
 
         // Load Post Details
         const loadPost = async () => {
-            const res = await fetch(`http://localhost:5000/api/posts/${postId}`);
+            const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`);
             const post = await res.json();
 
             if (post.userId._id !== user.id) {
@@ -96,3 +96,4 @@
     </script>
 </body>
 </html>
+
