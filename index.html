@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Book Web</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, <span id="username"></span></h2>
+        <button id="logoutBtn">Logout</button>
+        <button id="createPostBtn">Create New Post</button>
+
+        <h3>All Posts</h3>
+        <div id="postList"></div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user) {
+            alert('Please login first.');
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('username').innerText = user.username;
+
+        // Logout button
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        // Redirect to Create Post
+        document.getElementById('createPostBtn').addEventListener('click', () => {
+            window.location.href = 'create-post.html';
+        });
+
+        // Load Posts
+        const loadPosts = async () => {
+            const res = await fetch('http://localhost:5000/api/posts');
+            const posts = await res.json();
+
+            const postList = document.getElementById('postList');
+            postList.innerHTML = '';
+
+            posts.forEach(post => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post-item';
+                postDiv.innerHTML = `
+                    <h4>${post.title}</h4>
+                    <img src="${post.imageUrl}" width="200">
+                    <p>${post.content}</p>
+                    <p><strong>Author:</strong> ${post.userId.username}</p>
+                `;
+
+                // Nếu bài viết là của user đang login → cho phép sửa/xóa
+                if (post.userId._id === user.id) {
+                    const editBtn = document.createElement('button');
+                    editBtn.innerText = 'Edit';
+                    editBtn.onclick = () => editPost(post._id);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.innerText = 'Delete';
+                    deleteBtn.onclick = () => deletePost(post._id);
+
+                    postDiv.appendChild(editBtn);
+                    postDiv.appendChild(deleteBtn);
+                }
+
+                postList.appendChild(postDiv);
+            });
+        };
+
+        const editPost = (postId) => {
+            window.location.href = `edit-post.html?id=${postId}`;
+        };
+
+        const deletePost = async (postId) => {
+            if (confirm('Are you sure you want to delete this post?')) {
+                const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                const data = await res.json();
+                alert(data.message);
+                loadPosts();
+            }
+        };
+
+        // Initial load
+        loadPosts();
+    </script>
+</body>
+</html>

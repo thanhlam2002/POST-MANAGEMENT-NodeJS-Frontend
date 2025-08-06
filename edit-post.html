@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Post</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Edit Post</h2>
+        <form id="editPostForm">
+            <input type="text" id="title" placeholder="Post Title" required><br>
+            <textarea id="content" placeholder="Post Content" required></textarea><br>
+            <input type="file" id="image" accept="image/*"><br>
+            <img id="previewImage" width="200"><br>
+            <button type="submit">Update Post</button>
+        </form>
+        <button id="backBtn">Back to Home</button>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+
+        if (!token || !postId) {
+            alert('Unauthorized access!');
+            window.location.href = 'index.html';
+        }
+
+        // Load Post Details
+        const loadPost = async () => {
+            const res = await fetch(`http://localhost:5000/api/posts/${postId}`);
+            const post = await res.json();
+
+            if (post.userId._id !== user.id) {
+                alert('You are not authorized to edit this post');
+                window.location.href = 'index.html';
+            }
+
+            document.getElementById('title').value = post.title;
+            document.getElementById('content').value = post.content;
+            document.getElementById('previewImage').src = post.imageUrl;
+        };
+
+        loadPost();
+
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('editPostForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const imageFile = document.getElementById('image').files[0];
+
+            let imageUrl = document.getElementById('previewImage').src;
+
+            if (imageFile) {
+                // Upload ảnh mới lên Cloudinary
+                const formData = new FormData();
+                formData.append('file', imageFile);
+                formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); // <-- Thay tên preset của bạn
+
+                const cloudRes = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const cloudData = await cloudRes.json();
+                imageUrl = cloudData.secure_url;
+            }
+
+            // Update Post API
+            const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ title, content, imageUrl })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert('Post updated successfully!');
+                window.location.href = 'index.html';
+            } else {
+                alert(data.message);
+            }
+        });
+    </script>
+</body>
+</html>
