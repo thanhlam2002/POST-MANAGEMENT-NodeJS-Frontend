@@ -54,7 +54,7 @@
             const imageUrl = cloudData.secure_url;
 
             // Gửi request tạo bài viết mới
-            const res = await fetch('http://localhost:5000/api/posts', {
+            const res = await fetch('https://post-management-nodejs-v3.onrender.com/api/posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,3 +75,4 @@
     </script>
 </body>
 </html>
+
