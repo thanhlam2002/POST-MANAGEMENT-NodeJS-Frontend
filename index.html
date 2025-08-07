@@ -21,6 +21,16 @@
         <div id="postList" class="post-grid"></div>
     </div>
 
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <img id="modalImage" src="" alt="Post image">
+            <p id="modalAuthor"></p>
+            <p id="modalContent"></p>
+        </div>
+    </div>
+
     <script>
         // Check if user is logged in
         const token = localStorage.getItem('token');
@@ -42,6 +52,22 @@
             window.location.href = 'login.html';
         });
 
+        // Get modal elements
+        const modal = document.getElementById('postModal');
+        const span = document.getElementsByClassName('close-btn')[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
         // Load Posts
         const loadPosts = async () => {
             const res = await fetch('https://post-management-nodejs-v3.onrender.com/api/posts');
@@ -59,9 +85,18 @@
                 postDiv.innerHTML = `
                     <h4>${post.title}</h4>
                     <img src="${post.imageUrl}" alt="Post image">
-                    <p>${post.content}</p>
+                    <p>${post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content}</p>
                     <p><strong>Author:</strong> ${postAuthor}</p>
                 `;
+
+                // Add event listener to show modal
+                postDiv.addEventListener('click', () => {
+                    document.getElementById('modalTitle').innerText = post.title;
+                    document.getElementById('modalImage').src = post.imageUrl;
+                    document.getElementById('modalAuthor').innerText = `Author: ${postAuthor}`;
+                    document.getElementById('modalContent').innerText = post.content;
+                    modal.style.display = 'block';
+                });
 
                 // Logic hiển thị nút Edit và Delete được giữ nguyên
                 if (post.userId && post.userId._id === user.id) { 
@@ -70,11 +105,17 @@
 
                     const editBtn = document.createElement('button');
                     editBtn.innerText = 'Edit';
-                    editBtn.onclick = () => editPost(post._id);
+                    editBtn.onclick = (e) => { 
+                        e.stopPropagation(); // Ngăn chặn sự kiện click của post-item
+                        editPost(post._id);
+                    };
 
                     const deleteBtn = document.createElement('button');
                     deleteBtn.innerText = 'Delete';
-                    deleteBtn.onclick = () => deletePost(post._id);
+                    deleteBtn.onclick = (e) => {
+                        e.stopPropagation(); // Ngăn chặn sự kiện click của post-item
+                        deletePost(post._id);
+                    };
 
                     btnContainer.appendChild(editBtn);
                     btnContainer.appendChild(deleteBtn);
