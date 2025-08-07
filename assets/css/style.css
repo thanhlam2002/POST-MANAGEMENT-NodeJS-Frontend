@@ -7,13 +7,13 @@ body {
     line-height: 1.6;
 }
 
-/* Styles for login and register forms */
+/* Styles for login, register, and edit forms */
 .auth-page {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(to right, #ffafbd, #ffc3a0); /* Bạn có thể thay đổi màu sắc tại đây */
+    background: linear-gradient(to right, #ffafbd, #ffc3a0);
 }
 
 .auth-container {
@@ -22,6 +22,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
+    /* Chỉnh sửa độ rộng của form tại đây */
     max-width: 600px;
     text-align: center;
 }
@@ -138,6 +139,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    cursor: pointer; /* Thêm con trỏ để người dùng biết có thể click */
 }
 
 .post-item h4 {
@@ -200,6 +202,57 @@ button:hover {
 
 #logoutBtn:hover, #backBtn:hover {
     background-color: #c9302c;
+}
+
+/* New styles for the modal */
+.modal {
+    display: none; /* Ẩn ban đầu */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 700px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    text-align: left;
+}
+
+.close-btn {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
 
