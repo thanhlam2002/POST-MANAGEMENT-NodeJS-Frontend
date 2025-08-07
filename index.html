@@ -41,6 +41,21 @@
         </div>
     </div>
 
+    <div id="editPostModal" class="modal auth-page">
+        <div class="auth-container">
+            <h2>Edit Post</h2>
+            <form id="editForm">
+                <input type="hidden" id="editPostId">
+                <input type="text" id="editTitle" placeholder="Post title" required />
+                <textarea id="editContent" rows="5" placeholder="Post content" required></textarea>
+                <label>Change Image (optional):</label>
+                <input type="file" id="editImage" accept="image/*" />
+                <img id="editPreview" src="" alt="Image preview" />
+                <button type="submit">Update Post</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Check if user is logged in
         const token = localStorage.getItem('token');
@@ -65,6 +80,8 @@
         // Get modal elements
         const detailModal = document.getElementById('postModal');
         const deleteModal = document.getElementById('deleteModal');
+        const editModal = document.getElementById('editPostModal');
+
         const closeDetailBtn = document.querySelector('#postModal .close-btn');
         const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
@@ -86,6 +103,9 @@
             }
             if (event.target == deleteModal) {
                 deleteModal.style.display = 'none';
+            }
+            if (event.target == editModal) {
+                editModal.style.display = 'none';
             }
         }
 
@@ -128,7 +148,7 @@
                     editBtn.innerText = 'Edit';
                     editBtn.onclick = (e) => { 
                         e.stopPropagation();
-                        editPost(post._id);
+                        showEditModal(post);
                     };
 
                     const deleteBtn = document.createElement('button');
@@ -147,15 +167,56 @@
             });
         };
 
-        const editPost = (postId) => {
-            window.location.href = `edit-post.html?id=${postId}`;
+        const showEditModal = (post) => {
+            document.getElementById('editPostId').value = post._id;
+            document.getElementById('editTitle').value = post.title;
+            document.getElementById('editContent').value = post.content;
+            document.getElementById('editPreview').src = post.imageUrl;
+
+            editModal.style.display = 'flex';
         };
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const postId = document.getElementById('editPostId').value;
+            let imageUrl = document.getElementById('editPreview').src;
+            const title = document.getElementById('editTitle').value;
+            const content = document.getElementById('editContent').value;
+            const imageInput = document.getElementById('editImage');
+
+            const file = imageInput.files[0];
+            if (file) {
+                imageUrl = await uploadImageToCloudinary(file);
+            }
+
+            const updatedPost = {
+                title: title,
+                content: content,
+                image: imageUrl
+            };
+
+            const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updatedPost)
+            });
+            
+            if (res.ok) {
+                alert('Post updated successfully!');
+                editModal.style.display = 'none';
+                loadPosts();
+            } else {
+                const data = await res.json();
+                alert(data.message || 'Error updating post');
+            }
+        });
 
         const showDeleteModal = (postId) => {
             deleteModal.style.display = 'block';
-
-            const oldConfirmHandler = confirmDeleteBtn.onclick;
-            const oldCancelHandler = cancelDeleteBtn.onclick;
 
             confirmDeleteBtn.onclick = async () => {
                 const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`, {
@@ -168,11 +229,20 @@
                 deleteModal.style.display = 'none';
                 loadPosts();
             };
-
-            cancelDeleteBtn.onclick = () => {
-                deleteModal.style.display = 'none';
-            };
         };
+
+        async function uploadImageToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'bookweb');
+
+            const res = await fetch('https://api.cloudinary.com/v1_1/dov6mdeco/image/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            return data.secure_url;
+        }
 
         loadPosts();
     </script>
