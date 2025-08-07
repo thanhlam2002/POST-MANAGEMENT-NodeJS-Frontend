@@ -1,3 +1,4 @@
+/* General styles */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f4f7f6;
@@ -6,6 +7,71 @@ body {
     line-height: 1.6;
 }
 
+/* Styles for login and register forms */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f0f0f0; /* New background for auth pages */
+}
+
+.auth-container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.auth-container button {
+    width: 100%;
+    padding: 12px;
+    background: #5cb85c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.auth-container button:hover {
+    background: #45a049;
+}
+
+.auth-container p {
+    margin-top: 20px;
+}
+
+.auth-container a {
+    color: #5cb85c;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}
+
+/* Existing styles for other pages */
 .container {
     max-width: 1200px;
     margin: 20px auto;
@@ -135,5 +201,4 @@ button:hover {
 #logoutBtn:hover, #backBtn:hover {
     background-color: #c9302c;
 }
-
 
