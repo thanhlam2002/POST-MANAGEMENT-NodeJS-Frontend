@@ -63,9 +63,9 @@
                 // Upload ảnh mới lên Cloudinary
                 const formData = new FormData();
                 formData.append('file', imageFile);
-                formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); // <-- Thay tên preset của bạn
+                formData.append('upload_preset', 'bookweb'); // <-- Thay tên preset của bạn
 
-                const cloudRes = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', {
+                const cloudRes = await fetch('https://api.cloudinary.com/v1_1/dov6mdeco/image/upload', {
                     method: 'POST',
                     body: formData
                 });
@@ -96,4 +96,5 @@
     </script>
 </body>
 </html>
+
 
