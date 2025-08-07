@@ -15,7 +15,6 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Navbar styles */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -57,7 +56,6 @@ body {
     color: #333;
 }
 
-/* Post Grid styles */
 .post-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -94,14 +92,17 @@ body {
     flex-grow: 1;
 }
 
-.post-item button {
+.post-actions {
+    display: flex;
+    justify-content: space-around;
     margin-top: 10px;
-    display: inline-block;
-    width: auto;
-    padding: 8px 12px;
 }
 
-/* Buttons and Forms styles */
+.post-actions button {
+    width: 48%; /* Adjust button width */
+    margin: 0;
+}
+
 input[type="text"], input[type="password"], textarea {
     width: 100%;
     padding: 12px;
@@ -134,4 +135,5 @@ button:hover {
 #logoutBtn:hover, #backBtn:hover {
     background-color: #c9302c;
 }
+
 
