@@ -13,9 +13,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #f0f0f0; /* New background for auth pages */
-/*     background: url("https://png.pngtree.com/thumb_back/fh260/back_our/20190617/ourmid/pngtree-bird-book-tree-small-fresh-poster-banner-image_125954.jpg") no-repeat center center fixed; 
-    background-size: cover; */
+    background: linear-gradient(to right, #ffafbd, #ffc3a0); /* Bạn có thể thay đổi màu sắc tại đây */
 }
 
 .auth-container {
