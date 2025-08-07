@@ -44,6 +44,7 @@
 
         // Load Posts
         const loadPosts = async () => {
+            // Đã đổi lại về URL được deploy trên render.com
             const res = await fetch('https://post-management-nodejs-v3.onrender.com/api/posts');
             const posts = await res.json();
 
@@ -54,8 +55,8 @@
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post-item';
 
-                // Sửa lỗi ở đây: Truy cập post.author.username thay vì post.userId.username
-                const postAuthor = post.author ? post.author.username : 'Unknown';
+                // Sử dụng lại cách truy cập tác giả của bạn
+                const postAuthor = post.userId ? post.userId.username : 'Unknown';
 
                 postDiv.innerHTML = `
                     <h4>${post.title}</h4>
@@ -64,7 +65,7 @@
                     <p><strong>Author:</strong> ${postAuthor}</p>
                 `;
 
-                if (post.author && post.author._id === user._id) { 
+                if (post.userId && post.userId._id === user._id) { 
                     const btnContainer = document.createElement('div');
                     const editBtn = document.createElement('button');
                     editBtn.innerText = 'Edit';
@@ -104,8 +105,6 @@
     </script>
 </body>
 </html>
-
-
 
 
 
