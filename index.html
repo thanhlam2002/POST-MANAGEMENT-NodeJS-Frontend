@@ -63,7 +63,7 @@
                     <p><strong>Author:</strong> ${postAuthor}</p>
                 `;
 
-                // Logic hiển thị nút Edit và Delete đã được sửa về mã của bạn
+                // Logic hiển thị nút Edit và Delete được giữ nguyên
                 if (post.userId && post.userId._id === user.id) { 
                     const btnContainer = document.createElement('div');
                     btnContainer.className = 'post-actions';
