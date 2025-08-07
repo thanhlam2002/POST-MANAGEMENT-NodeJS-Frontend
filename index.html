@@ -41,16 +41,17 @@
         </div>
     </div>
 
-    <div id="editPostModal" class="modal auth-page">
+    <div id="editPostModal" class="modal">
         <div class="auth-container">
+            <span class="close-btn">&times;</span>
             <h2>Edit Post</h2>
             <form id="editForm">
                 <input type="hidden" id="editPostId">
                 <input type="text" id="editTitle" placeholder="Post title" required />
                 <textarea id="editContent" rows="5" placeholder="Post content" required></textarea>
-                <label>Change Image (optional):</label>
+                <label style="display: block; text-align: left; margin-bottom: 5px;">Change Image (optional):</label>
                 <input type="file" id="editImage" accept="image/*" />
-                <img id="editPreview" src="" alt="Image preview" />
+                <img id="editPreview" src="" alt="Image preview" style="max-width: 100%; margin-top: 10px;" />
                 <button type="submit">Update Post</button>
             </form>
         </div>
@@ -83,12 +84,27 @@
         const editModal = document.getElementById('editPostModal');
 
         const closeDetailBtn = document.querySelector('#postModal .close-btn');
+        const closeEditBtn = document.querySelector('#editPostModal .close-btn');
+
         const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        
+        // Form elements for edit modal
+        const editForm = document.getElementById('editForm');
+        const editTitle = document.getElementById('editTitle');
+        const editContent = document.getElementById('editContent');
+        const editImage = document.getElementById('editImage');
+        const editPreview = document.getElementById('editPreview');
+        const editPostId = document.getElementById('editPostId');
 
         // Close detail modal
         closeDetailBtn.onclick = function() {
             detailModal.style.display = 'none';
+        }
+        
+        // Close edit modal
+        closeEditBtn.onclick = function() {
+            editModal.style.display = 'none';
         }
 
         // Close delete modal
@@ -108,6 +124,14 @@
                 editModal.style.display = 'none';
             }
         }
+        
+        // Listen for image change in edit modal
+        editImage.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                editPreview.src = URL.createObjectURL(file);
+            }
+        });
 
         // Load Posts
         const loadPosts = async () => {
@@ -139,7 +163,7 @@
                     detailModal.style.display = 'block';
                 });
 
-                // Logic hiển thị nút Edit và Delete được giữ nguyên
+                // Logic hiển thị nút Edit và Delete
                 if (post.userId && post.userId._id === user.id) { 
                     const btnContainer = document.createElement('div');
                     btnContainer.className = 'post-actions';
@@ -168,31 +192,31 @@
         };
 
         const showEditModal = (post) => {
-            document.getElementById('editPostId').value = post._id;
-            document.getElementById('editTitle').value = post.title;
-            document.getElementById('editContent').value = post.content;
-            document.getElementById('editPreview').src = post.imageUrl;
+            editPostId.value = post._id;
+            editTitle.value = post.title;
+            editContent.value = post.content;
+            editPreview.src = post.imageUrl;
+            
+            // Clear the file input for a new file
+            editImage.value = '';
 
             editModal.style.display = 'flex';
         };
 
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
+        editForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const postId = document.getElementById('editPostId').value;
-            let imageUrl = document.getElementById('editPreview').src;
-            const title = document.getElementById('editTitle').value;
-            const content = document.getElementById('editContent').value;
-            const imageInput = document.getElementById('editImage');
+            const postId = editPostId.value;
+            let imageUrl = editPreview.src;
 
-            const file = imageInput.files[0];
+            const file = editImage.files[0];
             if (file) {
                 imageUrl = await uploadImageToCloudinary(file);
             }
 
             const updatedPost = {
-                title: title,
-                content: content,
+                title: editTitle.value,
+                content: editContent.value,
                 image: imageUrl
             };
 
@@ -248,3 +272,4 @@
     </script>
 </body>
 </html>
+
