@@ -31,7 +31,7 @@
 
         // Load Post Details
         const loadPost = async () => {
-            const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`);
+            const res = await fetch(http://localhost:5000/api/posts/${postId});
             const post = await res.json();
 
             if (post.userId._id !== user.id) {
@@ -51,56 +51,31 @@
         });
 
         document.getElementById('editPostForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+            e.preventDefault();
 
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
-    const imageFile = document.getElementById('image').files[0];
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const imageFile = document.getElementById('image').files[0];
 
-    let imageUrl = document.getElementById('previewImage').src;
+            let imageUrl = document.getElementById('previewImage').src;
 
-    if (imageFile) {
-        const formData = new FormData();
-        formData.append('file', imageFile);
-        formData.append('upload_preset', 'bookweb');
+            if (imageFile) {
+                // Upload ảnh mới lên Cloudinary
+                const formData = new FormData();
+                formData.append('file', imageFile);
+                formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); // <-- Thay tên preset của bạn
 
-        const cloudRes = await fetch('https://api.cloudinary.com/v1_1/dov6mdeco/image/upload', {
-            method: 'POST',
-            body: formData
-        });
-
-        const cloudData = await cloudRes.json();
-        imageUrl = cloudData.secure_url;
-    }
-
-    try {
-        const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({ title, content, imageUrl })
-        });
-
-        if (res.ok) {
-            alert('Post updated successfully!');
-            window.location.href = 'index.html';
-        } else {
-            const err = await res.json().catch(() => ({}));
-            alert(err.message || 'Failed to update post');
-        }
-    } catch (error) {
-        alert('Could not connect to server.');
-    }
-});
+                const cloudRes = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', {
+                    method: 'POST',
+                    body: formData
+                });
 
                 const cloudData = await cloudRes.json();
                 imageUrl = cloudData.secure_url;
             }
 
             // Update Post API
-            const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+            const res = await fetch(https://post-management-nodejs-v3.onrender.com/api/posts/${postId}, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
