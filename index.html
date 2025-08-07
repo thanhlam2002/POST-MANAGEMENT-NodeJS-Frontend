@@ -99,29 +99,29 @@
 
         // Close detail modal
         closeDetailBtn.onclick = function() {
-            detailModal.style.display = 'none';
+            detailModal.classList.remove('active');
         }
         
         // Close edit modal
         closeEditBtn.onclick = function() {
-            editModal.style.display = 'none';
+            editModal.classList.remove('active');
         }
 
         // Close delete modal
         cancelDeleteBtn.onclick = function() {
-            deleteModal.style.display = 'none';
+            deleteModal.classList.remove('active');
         }
 
         // Close modals when clicking outside
         window.onclick = function(event) {
             if (event.target == detailModal) {
-                detailModal.style.display = 'none';
+                detailModal.classList.remove('active');
             }
             if (event.target == deleteModal) {
-                deleteModal.style.display = 'none';
+                deleteModal.classList.remove('active');
             }
             if (event.target == editModal) {
-                editModal.style.display = 'none';
+                editModal.classList.remove('active');
             }
         }
         
@@ -160,7 +160,7 @@
                     document.getElementById('modalImage').src = post.imageUrl;
                     document.getElementById('modalAuthor').innerText = `Author: ${postAuthor}`;
                     document.getElementById('modalContent').innerText = post.content;
-                    detailModal.style.display = 'block';
+                    detailModal.classList.add('active');
                 });
 
                 // Logic hiển thị nút Edit và Delete
@@ -199,7 +199,7 @@
             
             editImage.value = '';
 
-            editModal.style.display = 'flex';
+            editModal.classList.add('active');
         };
 
         editForm.addEventListener('submit', async (e) => {
@@ -230,7 +230,7 @@
             
             if (res.ok) {
                 alert('Post updated successfully!');
-                editModal.style.display = 'none';
+                editModal.classList.remove('active');
                 loadPosts();
             } else {
                 const data = await res.json();
@@ -239,7 +239,7 @@
         });
 
         const showDeleteModal = (postId) => {
-            deleteModal.style.display = 'flex'; // Sử dụng flexbox để căn giữa modal
+            deleteModal.classList.add('active');
 
             confirmDeleteBtn.onclick = async () => {
                 const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`, {
@@ -249,7 +249,7 @@
 
                 const data = await res.json();
                 alert(data.message);
-                deleteModal.style.display = 'none';
+                deleteModal.classList.remove('active');
                 loadPosts();
             };
         };
@@ -271,5 +271,6 @@
     </script>
 </body>
 </html>
+
 
 
