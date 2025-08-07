@@ -207,10 +207,27 @@
 
             const postId = editPostId.value;
             let imageUrl = editPreview.src;
-
             const file = editImage.files[0];
+            
+            // LOGGING để gỡ lỗi
+            console.log('--- Bắt đầu cập nhật bài viết ---');
+            console.log('PostId:', postId);
+            console.log('URL ảnh hiện tại (từ preview):', imageUrl);
+            console.log('File ảnh mới được chọn:', file);
+            console.log('---------------------------------');
+
             if (file) {
-                imageUrl = await uploadImageToCloudinary(file);
+                console.log('Có file ảnh mới được chọn. Đang tải lên Cloudinary...');
+                try {
+                    imageUrl = await uploadImageToCloudinary(file);
+                    console.log('Tải lên thành công! URL ảnh mới:', imageUrl);
+                } catch (error) {
+                    console.error('Lỗi khi tải ảnh lên Cloudinary:', error);
+                    alert('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
+                    return; // Ngừng quá trình cập nhật
+                }
+            } else {
+                console.log('Không có file ảnh mới. Giữ lại URL cũ:', imageUrl);
             }
 
             const updatedPost = {
@@ -271,6 +288,7 @@
     </script>
 </body>
 </html>
+
 
 
 
