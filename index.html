@@ -96,6 +96,7 @@
         const editImage = document.getElementById('editImage');
         const editPreview = document.getElementById('editPreview');
         const editPostId = document.getElementById('editPostId');
+        let currentPostImageUrl = ''; // Biến để lưu URL ảnh gốc của bài viết
 
         // Close detail modal
         closeDetailBtn.onclick = function() {
@@ -114,13 +115,13 @@
 
         // Close modals when clicking outside
         window.onclick = function(event) {
-            if (event.target == detailModal) {
+            if (event.target === detailModal) {
                 detailModal.classList.remove('active');
             }
-            if (event.target == deleteModal) {
+            if (event.target === deleteModal) {
                 deleteModal.classList.remove('active');
             }
-            if (event.target == editModal) {
+            if (event.target === editModal) {
                 editModal.classList.remove('active');
             }
         }
@@ -197,6 +198,10 @@
             editContent.value = post.content;
             editPreview.src = post.imageUrl;
             
+            // Lưu URL ảnh gốc để sử dụng khi không có ảnh mới
+            currentPostImageUrl = post.imageUrl;
+
+            // Xóa file đã chọn trước đó
             editImage.value = '';
 
             editModal.classList.add('active');
@@ -206,28 +211,29 @@
             e.preventDefault();
 
             const postId = editPostId.value;
-            let imageUrl = editPreview.src;
+            let imageUrl = currentPostImageUrl; // Bắt đầu với URL ảnh gốc
             const file = editImage.files[0];
             
-            // LOGGING để gỡ lỗi
-            console.log('--- Bắt đầu cập nhật bài viết ---');
-            console.log('PostId:', postId);
-            console.log('URL ảnh hiện tại (từ preview):', imageUrl);
-            console.log('File ảnh mới được chọn:', file);
-            console.log('---------------------------------');
-
+            console.log('--- Bắt đầu quá trình cập nhật bài viết ---');
+            console.log('Post ID:', postId);
+            console.log('Tiêu đề mới:', editTitle.value);
+            console.log('Nội dung mới:', editContent.value);
+            console.log('Ảnh mới được chọn:', file);
+            console.log('URL ảnh cũ:', currentPostImageUrl);
+            
             if (file) {
-                console.log('Có file ảnh mới được chọn. Đang tải lên Cloudinary...');
+                console.log('Có file ảnh mới. Đang tải lên Cloudinary...');
                 try {
-                    imageUrl = await uploadImageToCloudinary(file);
-                    console.log('Tải lên thành công! URL ảnh mới:', imageUrl);
+                    const uploadResult = await uploadImageToCloudinary(file);
+                    imageUrl = uploadResult;
+                    console.log('Tải lên Cloudinary thành công! URL mới:', imageUrl);
                 } catch (error) {
-                    console.error('Lỗi khi tải ảnh lên Cloudinary:', error);
+                    console.error('LỖI: Không thể tải ảnh lên Cloudinary.', error);
                     alert('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
-                    return; // Ngừng quá trình cập nhật
+                    return;
                 }
             } else {
-                console.log('Không có file ảnh mới. Giữ lại URL cũ:', imageUrl);
+                console.log('Không có ảnh mới được chọn. Giữ nguyên URL cũ.');
             }
 
             const updatedPost = {
@@ -236,22 +242,32 @@
                 image: imageUrl
             };
 
-            const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
-                },
-                body: JSON.stringify(updatedPost)
-            });
-            
-            if (res.ok) {
-                alert('Post updated successfully!');
-                editModal.classList.remove('active');
-                loadPosts();
-            } else {
-                const data = await res.json();
-                alert(data.message || 'Error updating post');
+            console.log('Dữ liệu được gửi lên server:', JSON.stringify(updatedPost));
+
+            try {
+                const res = await fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(updatedPost)
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log('Cập nhật bài viết thành công!', data);
+                    alert('Post updated successfully!');
+                    editModal.classList.remove('active');
+                    loadPosts();
+                } else {
+                    const data = await res.json();
+                    console.error('LỖI: Server trả về lỗi khi cập nhật bài viết.', data);
+                    alert(data.message || 'Error updating post');
+                }
+            } catch (error) {
+                console.error('LỖI: Không thể kết nối với server.', error);
+                alert('Không thể kết nối đến server để cập nhật bài viết.');
             }
         });
 
@@ -280,6 +296,11 @@
                 method: 'POST',
                 body: formData
             });
+
+            if (!res.ok) {
+                throw new Error('Cloudinary upload failed.');
+            }
+
             const data = await res.json();
             return data.secure_url;
         }
@@ -288,6 +309,7 @@
     </script>
 </body>
 </html>
+
 
 
 
