@@ -1,101 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Edit Post</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Post</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    input, textarea, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+    }
+    img {
+      max-width: 100%;
+      margin: 10px 0;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Edit Post</h2>
-        <form id="editPostForm">
-            <input type="text" id="title" placeholder="Post Title" required><br>
-            <textarea id="content" placeholder="Post Content" required></textarea><br>
-            <input type="file" id="image" accept="image/*"><br>
-            <img id="previewImage" width="200"><br>
-            <button type="submit">Update Post</button>
-        </form>
-        <button id="backBtn">Back to Home</button>
-    </div>
+  <h2>Edit Post</h2>
+  <form id="editForm">
+    <input type="text" id="title" name="title" placeholder="Post title" required />
+    <textarea id="content" name="content" rows="5" placeholder="Post content" required></textarea>
+    
+    <label>Change Image (optional):</label>
+    <input type="file" id="image" accept="image/*" />
+    <img id="preview" src="" alt="Image preview" />
+    
+    <button type="submit">Update Post</button>
+  </form>
 
-    <script>
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
+  <script>
+    const form = document.getElementById('editForm');
+    const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    const imageInput = document.getElementById('image');
+    const preview = document.getElementById('preview');
 
-        if (!token || !postId) {
-            alert('Unauthorized access!');
-            window.location.href = 'index.html';
-        }
+    const postId = new URLSearchParams(window.location.search).get('id');
+    const token = localStorage.getItem('token');
 
-        // Load Post Details
-        const loadPost = async () => {
-            const res = await fetch(http://localhost:5000/api/posts/${postId});
-            const post = await res.json();
+    // Load post data to form
+    fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`)
+      .then(res => res.json())
+      .then(data => {
+        titleInput.value = data.title;
+        contentInput.value = data.content;
+        preview.src = data.image;
+      });
 
-            if (post.userId._id !== user.id) {
-                alert('You are not authorized to edit this post');
-                window.location.href = 'index.html';
-            }
+    // Upload image to Cloudinary
+    async function uploadImageToCloudinary(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'bookweb');
 
-            document.getElementById('title').value = post.title;
-            document.getElementById('content').value = post.content;
-            document.getElementById('previewImage').src = post.imageUrl;
-        };
+      const res = await fetch('https://api.cloudinary.com/v1_1/dov6mdeco/image/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      return data.secure_url;
+    }
 
-        loadPost();
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let imageUrl = preview.src;
 
-        document.getElementById('backBtn').addEventListener('click', () => {
-            window.location.href = 'index.html';
+      const file = imageInput.files[0];
+      if (file) {
+        imageUrl = await uploadImageToCloudinary(file);
+      }
+
+      const updatedPost = {
+        title: titleInput.value,
+        content: contentInput.value,
+        image: imageUrl
+      };
+
+      fetch(`https://post-management-nodejs-v3.onrender.com/api/posts/${postId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(updatedPost)
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Update failed');
+          }
+          alert('Post updated!');
+          window.location.href = 'index.html';
+        })
+        .catch(err => {
+          alert('Error updating post');
+          console.error(err);
         });
-
-        document.getElementById('editPostForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-            const imageFile = document.getElementById('image').files[0];
-
-            let imageUrl = document.getElementById('previewImage').src;
-
-            if (imageFile) {
-                // Upload ảnh mới lên Cloudinary
-                const formData = new FormData();
-                formData.append('file', imageFile);
-                formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); // <-- Thay tên preset của bạn
-
-                const cloudRes = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const cloudData = await cloudRes.json();
-                imageUrl = cloudData.secure_url;
-            }
-
-            // Update Post API
-            const res = await fetch(https://post-management-nodejs-v3.onrender.com/api/posts/${postId}, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
-                },
-                body: JSON.stringify({ title, content, imageUrl })
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                alert('Post updated successfully!');
-                window.location.href = 'index.html';
-            } else {
-                alert(data.message);
-            }
-        });
-    </script>
+    });
+  </script>
 </body>
 </html>
+
+
 
 
 
