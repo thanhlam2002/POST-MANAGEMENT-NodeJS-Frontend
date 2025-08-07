@@ -22,7 +22,6 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    /* Chỉnh sửa độ rộng của form tại đây */
     max-width: 600px;
     text-align: center;
 }
@@ -139,7 +138,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    cursor: pointer; /* Thêm con trỏ để người dùng biết có thể click */
+    cursor: pointer;
 }
 
 .post-item h4 {
@@ -167,7 +166,7 @@ body {
 }
 
 .post-actions button {
-    width: 48%; /* Adjust button width */
+    width: 48%;
     margin: 0;
 }
 
@@ -204,9 +203,9 @@ button:hover {
     background-color: #c9302c;
 }
 
-/* New styles for the modal */
+/* New styles for the detail modal */
 .modal {
-    display: none; /* Ẩn ban đầu */
+    display: none;
     position: fixed;
     z-index: 1;
     left: 0;
@@ -253,6 +252,56 @@ button:hover {
     height: auto;
     border-radius: 5px;
     margin-bottom: 20px;
+}
+
+/* New styles for the delete confirmation modal */
+.confirm-modal {
+    display: none;
+    position: fixed;
+    z-index: 2; /* Đặt z-index cao hơn modal chi tiết */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    padding-top: 15%;
+}
+
+.confirm-modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.confirm-modal-content h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.confirm-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.confirm-buttons button {
+    width: 45%;
+}
+
+#confirmDeleteBtn {
+    background-color: #d9534f;
+}
+
+#confirmDeleteBtn:hover {
+    background-color: #c9302c;
 }
 
 
