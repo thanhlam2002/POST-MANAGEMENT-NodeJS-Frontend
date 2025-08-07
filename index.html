@@ -22,7 +22,6 @@
     </div>
 
     <script>
-        // Check if user is logged in
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
 
@@ -34,7 +33,6 @@
         document.getElementById('username').innerText = `Welcome, ${user.username}`;
         document.getElementById('username').removeAttribute('href'); 
 
-        // Logout button
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
@@ -42,7 +40,6 @@
             window.location.href = 'login.html';
         });
 
-        // Load Posts
         const loadPosts = async () => {
             const res = await fetch('https://post-management-nodejs-v3.onrender.com/api/posts');
             const posts = await res.json();
@@ -63,7 +60,8 @@
                     <p><strong>Author:</strong> ${postAuthor}</p>
                 `;
 
-                // Logic hiển thị nút Edit và Delete đã được sửa
+                // Kiểm tra xem ID của tác giả bài viết có khớp với ID của người dùng đang đăng nhập không
+                // Sử dụng user.id hoặc user._id tùy thuộc vào cấu trúc dữ liệu của bạn
                 if (post.userId && post.userId._id === user._id) { 
                     const btnContainer = document.createElement('div');
                     btnContainer.className = 'post-actions';
@@ -106,6 +104,7 @@
     </script>
 </body>
 </html>
+
 
 
 
