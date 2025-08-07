@@ -258,7 +258,7 @@ button:hover {
 .confirm-modal {
     display: none;
     position: fixed;
-    z-index: 2; /* Đặt z-index cao hơn modal chi tiết */
+    z-index: 2;
     left: 0;
     top: 0;
     width: 100%;
@@ -303,6 +303,13 @@ button:hover {
 #confirmDeleteBtn:hover {
     background-color: #c9302c;
 }
+
+/* New styles for the edit modal (using existing auth-container) */
+#editPostModal .auth-container {
+    max-width: 600px; /* Độ rộng của form edit */
+    text-align: left; /* Căn lề trái cho nội dung form */
+}
+
 
 
 
